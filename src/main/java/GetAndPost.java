@@ -4,13 +4,10 @@ import io.restassured.http.Method;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.util.logging.Logger;
-
-import static org.hamcrest.core.IsEqual.equalTo;
 
 
 import static io.restassured.RestAssured.given;
@@ -19,6 +16,7 @@ import static io.restassured.RestAssured.given;
 public class GetAndPost {
 
     static String url = "http://ergast.com";
+    private Logger LOGGER = Logger.getLogger(GetAndPost.class);
 
     @BeforeClass
     public static void setBaseUri () {
@@ -32,14 +30,15 @@ public class GetAndPost {
         Response response = requestSpecification.request(Method.GET ,"/api/f1/drivers/alonso/constructors/renault/seasons.json");
 
         String res = response.getBody().asString();
-        System.out.println(res);
+       // System.out.println(res);
+        LOGGER.info(res);
 
         int statusCode = response.getStatusCode();
-        System.out.println(statusCode);
+        LOGGER.info("Status code: " + statusCode);
 
         JsonPath jsonPath = response.jsonPath();
         String season = jsonPath.get("MRData.SeasonTable.Seasons[0].season");
-        System.out.println("Season: " + season);
+        LOGGER.info("Season: " +season);
 
     }
 
@@ -54,8 +53,7 @@ public class GetAndPost {
                 .when()
                 .get("/api/f1/drivers/alonso/constructors/renault/seasons.json").then()
                 .assertThat().statusCode(200).and().contentType("application/json").extract().response();
-
-        System.out.println(response.asString());
+              LOGGER.info(response.asString());
     }
 
     @Test
@@ -103,7 +101,7 @@ public class GetAndPost {
         Response res = given().body(b).when().post("/api/f1/drivers/alonso/constructors/renault/seasons.json").then().assertThat()
                 .statusCode(200).and().contentType("application/json").and()
                 .extract().response();
-        System.out.println(res.asString());
+            LOGGER.info(res.asString());
     }
 
     @AfterClass
